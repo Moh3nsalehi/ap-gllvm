@@ -34,7 +34,7 @@
 package main
 
 import (
-	"github.com/SRI-CSL/gllvm/shared"
+	"github.com/thirdxmatson/ap-gllvm/shared"
 	"os"
 )
 

@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/SRI-CSL/gllvm/shared"
+	"github.com/thirdxmatson/ap-gllvm/shared"
 	"runtime"
 	"testing"
 )

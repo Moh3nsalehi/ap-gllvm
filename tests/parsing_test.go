@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/SRI-CSL/gllvm/shared"
+	"github.com/thirdxmatson/ap-gllvm/shared"
 	"strings"
 	"testing"
 )
