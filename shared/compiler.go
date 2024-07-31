@@ -41,6 +41,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"fmt"
 )
 
 type bitcodeToObjectLink struct {
@@ -226,9 +227,42 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 
 	// Run the attach command and ignore errors
 	_, nerr := execCmd(attachCmd, attachCmdArgs, "")
-	if nerr != nil {
+
+	/*
+	 * for AP-GLLVM: if objcopy fails, we try changing
+	 * the filename from <name>.o to <name>.cpp.<index>.o
+	 * for every index in [0,4]
+	 */
+	for i := 0; nerr != nil; i++ {
+		// Log the previous error each time
 		LogWarning("attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, nerr)
-		return
+
+		// We'll run the command at every index but I don't think we need to go past 4
+		// since I have only seen 0 and 4 used in reality
+		if i == 5 {
+			return
+		}
+
+		// Now we modify the filename and reset the arguments
+		f_name := tmpFile.Name()
+		dot_index := strings.LastIndex(f_name, ".")
+
+		// If the file doesn't end with ".o" we return
+		if dot_index == -1 || dot_index + 1 >= len(f_name) || f_name[dot_index + 1] != 'o' {
+			return
+		}
+
+		// Now extract the base of the file name by selecting the portion until the .o
+		f_base := f_name[:dot_index]
+
+		// add the extra extensions to the filename
+		new_f_name := fmt.Sprintf("%s.cpp.%d.o", baseName, index)
+
+		// Reconstruct the cmd args variable
+		attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + new_f_name, objFile}
+
+		// Rerun the attach command and ignore errors
+		_, nerr := execCmd(attachCmd, attachCmdArgs, "")
 	}
 
 	// Copy bitcode file to store, if necessary
