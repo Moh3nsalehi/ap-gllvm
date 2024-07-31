@@ -256,13 +256,13 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		f_base := f_name[:dot_index]
 
 		// add the extra extensions to the filename
-		new_f_name := fmt.Sprintf("%s.cpp.%d.o", baseName, index)
+		new_f_name := fmt.Sprintf("%s.cpp.%d.o", f_base, dot_index)
 
 		// Reconstruct the cmd args variable
 		attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + new_f_name, objFile}
 
 		// Rerun the attach command and ignore errors
-		_, nerr := execCmd(attachCmd, attachCmdArgs, "")
+		_, nerr = execCmd(attachCmd, attachCmdArgs, "")
 	}
 
 	// Copy bitcode file to store, if necessary
