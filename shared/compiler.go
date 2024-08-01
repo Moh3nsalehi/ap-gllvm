@@ -270,7 +270,7 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		tmp_args = []string{"-filetype=obj", "-o", objFile, bc_f_name}
 
 		// Run command
-		_, nerr := execCmd(tmp_cmd, tmp_args, "")
+		_, nerr = execCmd(tmp_cmd, tmp_args, "")
 		// Check for an error
 		if nerr != nil {
 			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", tmp_cmd, tmp_args, nerr)
@@ -278,7 +278,7 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		}
 
 		LogWarning(" ap-gclang: Rerunning objcopy\n")
-		_, nerr := execCmd(attachCmd, attachCmdArgs, "")
+		_, nerr = execCmd(attachCmd, attachCmdArgs, "")
 		if nerr != nil {
 			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, nerr)
 			return
