@@ -235,20 +235,21 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 	 */
 	for i := 0; nerr != nil; i++ {
 		// Log the previous error each time
-		LogWarning("attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, nerr)
+		LogWarning("%d attachBitcodePathToObject: %v %v failed because %v\n", i, attachCmd, attachCmdArgs, nerr)
 
 		// We'll run the command at every index but I don't think we need to go past 4
 		// since I have only seen 0 and 4 used in reality
-		if i == 5 {
+		if i == 1 {
 			return
 		}
 
 		// Now we modify the filename and reset the arguments
-		f_name := tmpFile.Name()
+		f_name := objFile
 		dot_index := strings.LastIndex(f_name, ".")
 
 		// If the file doesn't end with ".o" we return
 		if dot_index == -1 || dot_index + 1 >= len(f_name) || f_name[dot_index + 1] != 'o' {
+			LogWarning("returning because file doesn't end with .o\n%s", f_name)
 			return
 		}
 
@@ -256,13 +257,24 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		f_base := f_name[:dot_index]
 
 		// add the extra extensions to the filename
-		new_f_name := fmt.Sprintf("%s.cpp.%d.o", f_base, dot_index)
+		new_f_name := fmt.Sprintf(".%s.cpp.o.bc", f_base)
 
 		// Reconstruct the cmd args variable
-		attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + new_f_name, objFile}
+		attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + tmpFile.Name(), new_f_name}
+
+		// LogWarning("%d attachBitcodePathToObject: %v %v\n", i, attachCmd, attachCmdArgs)
 
 		// Rerun the attach command and ignore errors
 		_, nerr = execCmd(attachCmd, attachCmdArgs, "")
+
+		LogWarning(" ran objcopy a second time\n")
+
+		// var empty []string
+		// var s string
+
+		// s, nerr = runCmd("pwd", empty)
+
+		// LogWarning("%s\n", s)
 	}
 
 	// Copy bitcode file to store, if necessary
