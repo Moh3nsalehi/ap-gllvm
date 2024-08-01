@@ -225,6 +225,24 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + tmpFile.Name(), objFile}
 	}
 
+	// pwd_args := []string{""}
+
+	// pwd_out, pwd_nerr := runCmd("pwd", pwd_args)
+	// if pwd_nerr != nil {
+	// 	LogWarning(" ap-gclang: pwd: failed because %v\n", pwd_nerr)
+	// } else {
+	// 	LogWarning("running %v %v\n ap-gclang: pwd: %s\n", attachCmd, attachCmdArgs, pwd_out)
+	// }
+
+	// ls_args := []string{"-a"}
+
+	// ls_out, ls_nerr := runCmd("ls", ls_args)
+	// if ls_nerr != nil {
+	// 	LogWarning(" ap-gclang: ls -a: failed because %v\n", ls_nerr)
+	// } else {
+	// 	LogWarning("\n ap-gclang: ls -a: %s\n", ls_out)
+	// }
+
 	// Run the attach command and ignore errors
 	_, nerr := execCmd(attachCmd, attachCmdArgs, "")
 	if nerr != nil {
@@ -236,48 +254,64 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 
 		// If the file doesn't end with ".o" we return
 		if dot_index == -1 || dot_index + 1 >= len(f_name) || f_name[dot_index + 1] != 'o' {
-			LogWarning(" ap-gclang: returning because desired file doesn't end with .o\n%s", f_name)
+			LogWarning(" ap-gclang: returning because desired file doesn't end with .o\n%s\n", f_name)
 			return
 		}
 
 		// Now extract the base of the file name by selecting the portion until the .o
 		f_base := f_name[:dot_index]
 
-		// Add the extra extensions to the filename to find the actual file that was generated
-		act_f_name := fmt.Sprintf(".%s.cpp.o.bc", f_base)
+		find_name := fmt.Sprintf("%s*.o", f_base)
 
-		// The temporary bitcode file will be called .<filename>.bc
-		bc_f_name := fmt.Sprintf(".%s.bc", f_base)
+		attachCmdArgs = []string{".", "-type", "f", "-name", find_name}
+		find_res, ferr := runCmd("find", attachCmdArgs)
 
-		// Now we will call llvm-link -o .<filename>.bc .<filename>.cpp.o.bc
-		var tmp_cmd string
-		var tmp_args []string
-
-		// Set command and args
-		tmp_cmd = "llvm-link"
-		tmp_args = []string{"-o", bc_f_name, act_f_name}
-
-		// Run command
-		_, nerr := execCmd(tmp_cmd, tmp_args, "")
-		// Check for an error
-		if nerr != nil {
-			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", tmp_cmd, tmp_args, nerr)
+		// Remove the trailing '\n' from the result of find
+		act_f_path := find_res[:len(find_res) - 1]
+		if ferr != nil {
+			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, nerr)
 			return
 		}
 
-		// Set command and args
-		tmp_cmd = "llc"
-		tmp_args = []string{"-filetype=obj", "-o", objFile, bc_f_name}
-
-		// Run command
-		_, nerr = execCmd(tmp_cmd, tmp_args, "")
-		// Check for an error
-		if nerr != nil {
-			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", tmp_cmd, tmp_args, nerr)
-			return
+		if runtime.GOOS == osDARWIN {
+			attachCmdArgs = []string{"-r", "-keep_private_externs", objFile, "-sectcreate", DarwinSegmentName, DarwinSectionName, tmpFile.Name(), "-o", act_f_path}
+		} else {
+			attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + tmpFile.Name(), act_f_path}
 		}
 
-		LogWarning(" ap-gclang: Rerunning objcopy\n")
+		// // Add the extra extensions to the filename to find the actual file that was generated
+		// act_f_name := fmt.Sprintf(".%s.cpp.o.bc", f_base)
+
+		// // The temporary bitcode file will be called .<filename>.bc
+		// bc_f_name := fmt.Sprintf(".%s.bc", f_base)
+
+		// // Temporary execCmd args
+		// var tmp_args []string
+
+		// // Set command and args for llvm-link -o .<filename>.bc .<filename>.cpp.o.bc
+
+		// tmp_args = []string{"-o", bc_f_name, act_f_name}
+
+		// // Run llvm-link 
+		// _, nerr := execCmd("llvm-link", tmp_args, "")
+		// // Check for an error
+		// if nerr != nil {
+		// 	LogWarning(" ap-gclang: attachBitcodePathToObject: llvm-link %v failed because %v\n", tmp_args, nerr)
+		// 	return
+		// }
+
+		// // Set command and args for llc -filetype=obj -o <filename>.o .<filename>.bc
+		// tmp_args = []string{"-filetype=obj", "-o", objFile, bc_f_name}
+
+		// // Run llc
+		// _, nerr = execCmd("llc", tmp_args, "")
+		// // Check for an error
+		// if nerr != nil {
+		// 	LogWarning(" ap-gclang: attachBitcodePathToObject: llc %v failed because %v\n", tmp_args, nerr)
+		// 	return
+		// }
+
+		// // Now we rerun objcopy with the previous arguments
 		_, nerr = execCmd(attachCmd, attachCmdArgs, "")
 		if nerr != nil {
 			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, nerr)
