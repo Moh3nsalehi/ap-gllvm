@@ -225,24 +225,6 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + tmpFile.Name(), objFile}
 	}
 
-	// pwd_args := []string{""}
-
-	// pwd_out, pwd_nerr := runCmd("pwd", pwd_args)
-	// if pwd_nerr != nil {
-	// 	LogWarning(" ap-gclang: pwd: failed because %v\n", pwd_nerr)
-	// } else {
-	// 	LogWarning("running %v %v\n ap-gclang: pwd: %s\n", attachCmd, attachCmdArgs, pwd_out)
-	// }
-
-	// ls_args := []string{"-a"}
-
-	// ls_out, ls_nerr := runCmd("ls", ls_args)
-	// if ls_nerr != nil {
-	// 	LogWarning(" ap-gclang: ls -a: failed because %v\n", ls_nerr)
-	// } else {
-	// 	LogWarning("\n ap-gclang: ls -a: %s\n", ls_out)
-	// }
-
 	// Run the attach command and ignore errors
 	_, nerr := execCmd(attachCmd, attachCmdArgs, "")
 	if nerr != nil {
