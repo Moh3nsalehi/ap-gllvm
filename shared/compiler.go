@@ -271,20 +271,20 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		}
 
 		// Ensure that find returned a result with at least 1 character and an endline
-		if len(fins_res) < 2 {
+		if len(find_res) < 2 {
 			LogWarning(" ap-gclang: attachBitcodePathToObject: find returned nothing")
 			return
 		}
 
 		// Remove the trailing '\n' from the result of find
-		find_res := find_res[:len(find_res) - 1]
+		find_res = find_res[:len(find_res) - 1]
 
-		nl_index = 0
+		nl_index := 0
 		// For each result of find we rerun objcopy
 		for nl_index != -1 {
-			nl_index = strings.LastIndex(f_name, "\n")
+			nl_index = strings.LastIndex(find_res, "\n")
 
-			f_path = find_res[nl_index + 1:]
+			f_path := find_res[nl_index + 1:]
 
 			if runtime.GOOS == osDARWIN {
 				attachCmdArgs = []string{"-r", "-keep_private_externs", objFile, "-sectcreate", DarwinSegmentName, DarwinSectionName, tmpFile.Name(), "-o", f_path}
