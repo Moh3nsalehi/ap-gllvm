@@ -265,58 +265,40 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 
 		attachCmdArgs = []string{".", "-type", "f", "-name", find_name}
 		find_res, ferr := runCmd("find", attachCmdArgs)
-
-		// Remove the trailing '\n' from the result of find
-		act_f_path := find_res[:len(find_res) - 1]
 		if ferr != nil {
 			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, nerr)
 			return
 		}
 
-		if runtime.GOOS == osDARWIN {
-			attachCmdArgs = []string{"-r", "-keep_private_externs", objFile, "-sectcreate", DarwinSegmentName, DarwinSectionName, tmpFile.Name(), "-o", act_f_path}
-		} else {
-			attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + tmpFile.Name(), act_f_path}
-		}
-
-		// // Add the extra extensions to the filename to find the actual file that was generated
-		// act_f_name := fmt.Sprintf(".%s.cpp.o.bc", f_base)
-
-		// // The temporary bitcode file will be called .<filename>.bc
-		// bc_f_name := fmt.Sprintf(".%s.bc", f_base)
-
-		// // Temporary execCmd args
-		// var tmp_args []string
-
-		// // Set command and args for llvm-link -o .<filename>.bc .<filename>.cpp.o.bc
-
-		// tmp_args = []string{"-o", bc_f_name, act_f_name}
-
-		// // Run llvm-link 
-		// _, nerr := execCmd("llvm-link", tmp_args, "")
-		// // Check for an error
-		// if nerr != nil {
-		// 	LogWarning(" ap-gclang: attachBitcodePathToObject: llvm-link %v failed because %v\n", tmp_args, nerr)
-		// 	return
-		// }
-
-		// // Set command and args for llc -filetype=obj -o <filename>.o .<filename>.bc
-		// tmp_args = []string{"-filetype=obj", "-o", objFile, bc_f_name}
-
-		// // Run llc
-		// _, nerr = execCmd("llc", tmp_args, "")
-		// // Check for an error
-		// if nerr != nil {
-		// 	LogWarning(" ap-gclang: attachBitcodePathToObject: llc %v failed because %v\n", tmp_args, nerr)
-		// 	return
-		// }
-
-		// // Now we rerun objcopy with the previous arguments
-		_, nerr = execCmd(attachCmd, attachCmdArgs, "")
-		if nerr != nil {
-			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, nerr)
+		// Ensure that find returned a result with at least 1 character and an endline
+		if len(fins_res) < 2 {
+			LogWarning(" ap-gclang: attachBitcodePathToObject: find returned nothing")
 			return
 		}
+
+		// Remove the trailing '\n' from the result of find
+		find_res := find_res[:len(find_res) - 1]
+
+		nl_index = 0
+		// For each result of find we rerun objcopy
+		for nl_index != -1 {
+			nl_index = strings.LastIndex(f_name, "\n")
+
+			f_path = find_res[nl_index + 1:]
+
+			if runtime.GOOS == osDARWIN {
+				attachCmdArgs = []string{"-r", "-keep_private_externs", objFile, "-sectcreate", DarwinSegmentName, DarwinSectionName, tmpFile.Name(), "-o", f_path}
+			} else {
+				attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + tmpFile.Name(), f_path}
+			}
+	
+			_, nerr = execCmd(attachCmd, attachCmdArgs, "")
+			if nerr != nil {
+				LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, nerr)
+				return
+			}
+		}
+
 	}
 
 	// Copy bitcode file to store, if necessary
