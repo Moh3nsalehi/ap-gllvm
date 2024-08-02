@@ -261,7 +261,7 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		// Now extract the base of the file name by selecting the portion until the .o
 		f_base := f_name[:dot_index]
 
-		find_name := fmt.Sprintf("%s*.o", f_base)
+		find_name := fmt.Sprintf("%s.cpp*.o", f_base)
 
 		attachCmdArgs = []string{".", "-type", "f", "-name", find_name}
 		find_res, ferr := runCmd("find", attachCmdArgs)
