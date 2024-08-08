@@ -51,10 +51,10 @@ type bitcodeToObjectLink struct {
 
 // Compile wraps a call to the compiler with the given args.
 func Compile(args []string, compiler string) (exitCode int) {
-	pwd_out, pwd_err := runCmd("pwd", []string{})
-	if pwd_err == nil {
-		LogWarning("compile pwd %s", pwd_out)
-	}
+	// pwd_out, pwd_err := runCmd("pwd", []string{})
+	// if pwd_err == nil {
+	// 	LogWarning("compile pwd %s", pwd_out)
+	// }
 
 	exitCode = 0
 	// in the configureOnly case we have to know the exit code of the compile
@@ -69,7 +69,7 @@ func Compile(args []string, compiler string) (exitCode int) {
 	var wg sync.WaitGroup
 
 	LogDebug("Compile using parsed arguments:%v\n", &pr)
-	olddir := fixParserRes(pr)
+	// olddir := fixParserRes(pr)
 
 	// If configure only, emit-llvm, flto, or print only are set, just execute the compiler
 	if pr.SkipBitcodeGeneration() {
@@ -114,54 +114,54 @@ func Compile(args []string, compiler string) (exitCode int) {
 			}
 		}
 	}
-	if olddir != "" {
-		// TODO: error handle
-		_, _ = execCmd("cd", []string{olddir}, "")
-	}
+	// if olddir != "" {
+	// 	// TODO: error handle
+	// 	_, _ = execCmd("cd", []string{olddir}, "")
+	// }
 	return
 }
 
-func fixParserRes(pr ParserResult) string {
-	if len(pr.InputFiles) != 1 || len(pr.ObjectFiles) != 1 {
-		LogWarning("length not equal to 1\n")
-		return ""
-	} else {
-		pwd_out, pwd_err := runCmd("pwd", []string{})
-		if pwd_err != nil {
-			LogWarning("pwd fail")
-			return ""
-		}
-		cdir := pwd_out[:len(pwd_out) - 1]
+// func fixParserRes(pr ParserResult) string {
+// 	if len(pr.InputFiles) != 1 || len(pr.ObjectFiles) != 1 {
+// 		LogWarning("length not equal to 1\n")
+// 		return ""
+// 	} else {
+// 		pwd_out, pwd_err := runCmd("pwd", []string{})
+// 		if pwd_err != nil {
+// 			LogWarning("pwd fail")
+// 			return ""
+// 		}
+// 		cdir := pwd_out[:len(pwd_out) - 1]
 
-		obj_rel := pr.ObjectFiles[0]
+// 		obj_rel := pr.ObjectFiles[0]
 
-		firsti := strings.Index(obj_rel, "/")
-		lasti := strings.LastIndex(obj_rel, "/")
-		if (firsti != -1 && lasti != -1 && lasti < len(obj_rel)) {
-			inter_path := obj_rel[(firsti):(lasti + 1)]
-			LogWarning("interpath: %s\n", inter_path)
-			opf_name := obj_rel[(lasti + 1):]
-			LogWarning("opf_name: %s\n", opf_name)
+// 		firsti := strings.Index(obj_rel, "/")
+// 		lasti := strings.LastIndex(obj_rel, "/")
+// 		if (firsti != -1 && lasti != -1 && lasti < len(obj_rel)) {
+// 			inter_path := obj_rel[(firsti):(lasti + 1)]
+// 			LogWarning("interpath: %s\n", inter_path)
+// 			opf_name := obj_rel[(lasti + 1):]
+// 			LogWarning("opf_name: %s\n", opf_name)
 
-			new_dir := fmt.Sprintf("%s/libraries%s", cdir, inter_path)
-			LogWarning("new_dir: %s", new_dir)
-			cd_out, cd_err := runCmd("cd", []string{new_dir})
-			LogWarning("cd_out: %s, cd_err: %s", cd_out, cd_err)
-			pwd_out, pwd_err := runCmd("pwd", []string{})
-			if cd_err != nil {
-				LogWarning("cd err")
-			}
-			if pwd_err == nil {
-				LogWarning("compile pwd %s", pwd_out)
-			}
-			return cdir
-		} else {
-			LogWarning("not able to find directory: %s", pwd_out)
-			return ""
-		}
+// 			new_dir := fmt.Sprintf("%s/libraries%s", cdir, inter_path)
+// 			LogWarning("new_dir: %s", new_dir)
+// 			cd_out, cd_err := runCmd("cd", []string{new_dir})
+// 			LogWarning("cd_out: %s, cd_err: %s", cd_out, cd_err)
+// 			pwd_out, pwd_err := runCmd("pwd", []string{})
+// 			if cd_err != nil {
+// 				LogWarning("cd err")
+// 			}
+// 			if pwd_err == nil {
+// 				LogWarning("compile pwd %s", pwd_out)
+// 			}
+// 			return cdir
+// 		} else {
+// 			LogWarning("not able to find directory: %s", pwd_out)
+// 			return ""
+// 		}
 		
-	}
-}
+// 	}
+// }
 
 // Compiles bitcode files and mutates the list of bc->obj links to perform + the list of
 // new object files to link
@@ -193,10 +193,10 @@ func buildAndAttachBitcode(compilerExecName string, pr ParserResult, bcObjLinks 
 }
 
 func attachBitcodePathToObject(bcFile, objFile string) (success bool) {
-	pwd_out, pwd_err := runCmd("pwd", []string{})
-	if pwd_err == nil {
-		LogWarning("attachbc pwd %s", pwd_out)
-	}
+	// pwd_out, pwd_err := runCmd("pwd", []string{})
+	// if pwd_err == nil {
+	// 	LogWarning("attachbc pwd %s", pwd_out)
+	// }
 	success = false
 	// We can only attach a bitcode path to certain file types
 	// this is too fragile, we need to look into a better way to do this.
@@ -242,13 +242,14 @@ func attachBitcodePathToObject(bcFile, objFile string) (success bool) {
 
 // move this out to concentrate on the object path analysis above.
 func injectPath(extension, bcFile, objFile string) (success bool) {
-	pwd_out, pwd_err := runCmd("pwd", []string{})
-	if pwd_err == nil {
-		LogWarning("injectpath pwd %s", pwd_out)
-	}
+	// pwd_out, pwd_err := runCmd("pwd", []string{})
+	// if pwd_err == nil {
+	// 	LogWarning("injectpath pwd %s", pwd_out)
+	// }
 	success = false
 	// Store bitcode path to temp file
 	var absBcPath, _ = filepath.Abs(bcFile)
+	// LogWarning("absBcPath: %s\n", absBcPath)
 	tmpContent := []byte(absBcPath + "\n")
 	tmpFile, err := os.CreateTemp("", "gllvm")
 	if err != nil {
@@ -284,8 +285,11 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + tmpFile.Name(), objFile}
 	}
 
+	// LogWarning("objFile: %s\n", objFile)
+
 	// Check if objFile exists in this directory
-	ls_out, ls_err := runCmd("ls", []string{objFile})
+	ls_out, ls_err := runCmd("ls", []string{"./" + objFile})
+	// LogWarning("ls res: %s\n", ls_out)
 	if (ls_err == nil && len(ls_out) >= len(objFile)) {
 		// Run the attach command and ignore errors
 		_, nerr := execCmd(attachCmd, attachCmdArgs, "")
@@ -298,20 +302,25 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 
 		// Obtain the base name of the file we are looking for
 		f_name := objFile
-		dot_index := strings.LastIndex(f_name, ".")
+		// dot_index := strings.LastIndex(f_name, ".")
 
-		// If the file doesn't end with ".o" we return
-		if dot_index == -1 || dot_index + 1 >= len(f_name) || f_name[dot_index + 1] != 'o' {
-			LogWarning(" ap-gclang: returning because desired file doesn't end with .o\n%s\n", f_name)
-			return
-		}
+		// // If the file doesn't end with ".o" we return
+		// if dot_index == -1 || dot_index + 1 >= len(f_name) || f_name[dot_index + 1] != 'o' {
+		// 	LogWarning(" ap-gclang: returning because desired file doesn't end with .o\n%s\n", f_name)
+		// 	return
+		// }
 
-		// Now extract the base of the file name by selecting the portion until the .o
-		f_base := f_name[:dot_index]
+		// // Now extract the base of the file name by selecting the portion until the .o
+		// f_base := f_name[:dot_index]
 
-		find_name := fmt.Sprintf("%s.c*.o", f_base)
+		f_base := strings.TrimSuffix(f_name, filepath.Ext(f_name))
 
-		attachCmdArgs = []string{".", "-type", "f", "-name", find_name}
+		dir, find_name := path.Split(f_base)
+
+		find_name = fmt.Sprintf("%s.c*.o", find_name)
+		dir = fmt.Sprintf("./%s", dir)
+
+		attachCmdArgs = []string{dir, "-type", "f", "-name", find_name}
 		find_res, ferr := runCmd("find", attachCmdArgs)
 		if ferr != nil {
 			LogWarning(" ap-gclang: attachBitcodePathToObject: %v %v failed because %v\n", attachCmd, attachCmdArgs, ferr)
@@ -343,7 +352,7 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 				attachCmdArgs = []string{}
 				attachCmdArgs = []string{"--add-section", ELFSectionName + "=" + tmpFile.Name(), f_path}
 			}
-			LogWarning(" running %v %v\n", attachCmd, attachCmdArgs)
+			// LogWarning(" running %v %v\n", attachCmd, attachCmdArgs)
 	
 			_, nerr := execCmd(attachCmd, attachCmdArgs, "")
 			if nerr != nil {
@@ -371,7 +380,7 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 				LogWarning("\nls: \n%stemp file: %s\n%s\n", ls_out, t_filename, cat_out)
 				return
 			} else {
-				LogWarning(" %v %v succeeded\n", attachCmd, attachCmdArgs)
+				// LogWarning(" %v %v succeeded\n", attachCmd, attachCmdArgs)
 				// return
 			}
 		}

@@ -496,7 +496,7 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 				dir += "/"
 			}
 
-			if strings.HasPreffix(dir, "-o") {
+			if strings.HasPrefix(dir, "-o") {
 				dir = dir[2:]
 			}
 		}
