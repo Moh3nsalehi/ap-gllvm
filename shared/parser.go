@@ -475,14 +475,41 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 	} else {
 		srcFile := pr.InputFiles[srcFileIndex]
 		var _, baseNameWithExt = path.Split(srcFile)
+		LogWarning("baseNameWithExt: %s\n", baseNameWithExt)
+
+		dir := ""
+		objFile := ""
+		// check if we have an object file we can refer to the directory of
+		if (len(pr.ObjectFiles) == len(pr.InputFiles)) {
+			// if input and object files are one to one, get the corresponding object file
+			objFile = pr.ObjectFiles[srcFileIndex]
+		} else {
+			// otherwise just use the directory of the first object file
+			objFile = pr.ObjectFiles[0]
+		}
+
+		if objFile != "" {
+			// obtain the directory flag for the output directory
+			dir, _ = path.Split(pr.ObjectFiles[srcFileIndex])
+
+			if !strings.HasSuffix(dir, "/") {
+				dir += "/"
+			}
+
+			if strings.HasPreffix(dir, "-o") {
+				dir = dir[2:]
+			}
+		}
+
 		// issue #30:  main.cpp and main.c cause conflicts.
 		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
-		bcBase = fmt.Sprintf(".%s.o.bc", baseNameWithExt)
+		bcBase = fmt.Sprintf("%s.%s.o.bc", dir, baseNameWithExt)
 		if hidden {
-			objBase = fmt.Sprintf(".%s.o", baseNameWithExt)
+			objBase = fmt.Sprintf("%s.%s.o", dir, baseNameWithExt)
 		} else {
-			objBase = fmt.Sprintf("%s.o", baseName)
+			objBase = fmt.Sprintf("%s%s.o", dir, baseName)
 		}
+		LogWarning("objBase: %s, bcBase: %s\n", objBase, bcBase)
 	}
 	return
 }
