@@ -281,8 +281,14 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		// TODO: check if findres produces more than one result
 
 		nl_index := 0
+		i := 0
 		// For each result of find we rerun objcopy
 		for nl_index != -1 {
+			if i > 0 {
+				LogWarning(" ap-gclang: find returned multiple results")
+				return
+			}
+			i++
 			nl_index = strings.LastIndex(find_res, "\n")
 
 			f_path := find_res[nl_index + 1:]
