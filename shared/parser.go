@@ -475,44 +475,72 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 	} else {
 		srcFile := pr.InputFiles[srcFileIndex]
 		var _, baseNameWithExt = path.Split(srcFile)
-		LogWarning("baseNameWithExt: %s\n", baseNameWithExt)
 
-		dir := ""
-		objFile := ""
-		// check if we have an object file we can refer to the directory of
+		
+		// check if we have an object file we can refer to relative path of
+		var objFile string
 		if (len(pr.ObjectFiles) == len(pr.InputFiles)) {
 			// if input and object files are one to one, get the corresponding object file
 			objFile = pr.ObjectFiles[srcFileIndex]
 		} else {
-			// otherwise just use the directory of the first object file
+			// otherwise just use the first object file
 			objFile = pr.ObjectFiles[0]
 		}
 
+		// if we found an object file to refer to
 		if objFile != "" {
-			// obtain the directory flag for the output directory
-			dir, _ = path.Split(pr.ObjectFiles[srcFileIndex])
+			// obtain the directory relative directory for the output file
+			rel_path, _ := path.Split(pr.ObjectFiles[srcFileIndex])
 
-			if !strings.HasSuffix(dir, "/") {
-				dir += "/"
-			}
+			// check if we obtained anything
+			if len(rel_path) > 0 {
+				// ensure that path ends with '/'
+				if !strings.HasSuffix(dir, "/") {
+					rel_path += "/"
+				}
 
-			if strings.HasPrefix(dir, "-o") {
-				dir = dir[2:]
+				// remove a '-o' if it is attached to the beginning
+				if strings.HasPrefix(dir, "-o") {
+					rel_path = rel_path[2:]
+				}
+			} else {
+				rel_path = ""
 			}
 		}
 
 		// issue #30:  main.cpp and main.c cause conflicts.
 		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
-		bcBase = fmt.Sprintf("%s.%s.o.bc", dir, baseNameWithExt)
+		// append relative directory to the path of the object and bitcode files
+		bcBase = fmt.Sprintf("%s.%s.o.bc", rel_path, baseNameWithExt)
 		if hidden {
-			objBase = fmt.Sprintf("%s.%s.o", dir, baseNameWithExt)
+			objBase = fmt.Sprintf("%s.%s.o", rel_path, baseNameWithExt)
 		} else {
-			objBase = fmt.Sprintf("%s%s.o", dir, baseName)
+			objBase = fmt.Sprintf("%s%s.o", rel_path, baseName)
 		}
-		LogWarning("objBase: %s, bcBase: %s\n", objBase, bcBase)
 	}
 	return
 }
+
+// func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase string, bcBase string) {
+// 	if len(pr.InputFiles) == 1 && pr.IsCompileOnly && len(pr.OutputFilename) > 0 {
+// 		objBase = pr.OutputFilename
+// 		dir, baseName := path.Split(objBase)
+// 		bcBaseName := fmt.Sprintf(".%s.bc", baseName)
+// 		bcBase = path.Join(dir, bcBaseName)
+// 	} else {
+// 		srcFile := pr.InputFiles[srcFileIndex]
+// 		var _, baseNameWithExt = path.Split(srcFile)
+// 		// issue #30:  main.cpp and main.c cause conflicts.
+// 		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
+// 		bcBase = fmt.Sprintf(".%s.o.bc", baseNameWithExt)
+// 		if hidden {
+// 			objBase = fmt.Sprintf(".%s.o", baseNameWithExt)
+// 		} else {
+// 			objBase = fmt.Sprintf("%s.o", baseName)
+// 		}
+// 	}
+// 	return
+// }
 
 // Return a hash for the absolute object path
 func getHashedPath(path string) string {

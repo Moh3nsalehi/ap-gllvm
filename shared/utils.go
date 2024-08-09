@@ -41,13 +41,7 @@ import (
 
 // Executes a command then returns true for success, false if there was an error, err is either nil or the error.
 func execCmd(cmdExecName string, args []string, workingDir string) (success bool, err error) {
-	// if cmdExecName == "objcopy" {
-	//  	LogWarning("ignoring objcopy")
-	// 	return
-	// }
 	cmd := exec.Command(cmdExecName, args...)
-	LogDebug(" command args: %v\n", cmd.Args)
-	LogDebug(" command: %v\n", cmd)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
