@@ -276,7 +276,7 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 		// Remove the trailing '\n' from the result of find
 		find_res = find_res[:len(find_res) - 1]
 
-		LogWarning("find_res: %s", find_res)
+		LogDebug("find_res: %s", find_res)
 
 		nl_index := 0
 		// For each result of find we rerun objcopy

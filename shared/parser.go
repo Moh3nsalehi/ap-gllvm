@@ -487,20 +487,22 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 			objFile = pr.ObjectFiles[0]
 		}
 
+		var rel_path string
+
 		// if we found an object file to refer to
 		if objFile != "" {
 			// obtain the directory relative directory for the output file
-			rel_path, _ := path.Split(pr.ObjectFiles[srcFileIndex])
+			rel_path, _ = path.Split(pr.ObjectFiles[srcFileIndex])
 
 			// check if we obtained anything
 			if len(rel_path) > 0 {
 				// ensure that path ends with '/'
-				if !strings.HasSuffix(dir, "/") {
+				if !strings.HasSuffix(rel_path, "/") {
 					rel_path += "/"
 				}
 
 				// remove a '-o' if it is attached to the beginning
-				if strings.HasPrefix(dir, "-o") {
+				if strings.HasPrefix(rel_path, "-o") {
 					rel_path = rel_path[2:]
 				}
 			} else {
