@@ -278,6 +278,8 @@ func injectPath(extension, bcFile, objFile string) (success bool) {
 
 		LogDebug("find_res: %s", find_res)
 
+		// TODO: check if findres produces more than one result
+
 		nl_index := 0
 		// For each result of find we rerun objcopy
 		for nl_index != -1 {

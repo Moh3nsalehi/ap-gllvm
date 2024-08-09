@@ -511,6 +511,7 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 		}
 
 		// issue #30:  main.cpp and main.c cause conflicts.
+		// ap-gllvm NOTE: because AP tracks file extension maybe we can keep track of extension
 		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
 		// append relative directory to the path of the object and bitcode files
 		bcBase = fmt.Sprintf("%s.%s.o.bc", rel_path, baseNameWithExt)
