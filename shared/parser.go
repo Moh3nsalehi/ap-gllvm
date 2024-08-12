@@ -538,27 +538,6 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 	return
 }
 
-// func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase string, bcBase string) {
-// 	if len(pr.InputFiles) == 1 && pr.IsCompileOnly && len(pr.OutputFilename) > 0 {
-// 		objBase = pr.OutputFilename
-// 		dir, baseName := path.Split(objBase)
-// 		bcBaseName := fmt.Sprintf(".%s.bc", baseName)
-// 		bcBase = path.Join(dir, bcBaseName)
-// 	} else {
-// 		srcFile := pr.InputFiles[srcFileIndex]
-// 		var _, baseNameWithExt = path.Split(srcFile)
-// 		// issue #30:  main.cpp and main.c cause conflicts.
-// 		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
-// 		bcBase = fmt.Sprintf(".%s.o.bc", baseNameWithExt)
-// 		if hidden {
-// 			objBase = fmt.Sprintf(".%s.o", baseNameWithExt)
-// 		} else {
-// 			objBase = fmt.Sprintf("%s.o", baseName)
-// 		}
-// 	}
-// 	return
-// }
-
 // Return a hash for the absolute object path
 func getHashedPath(path string) string {
 	inputBytes := []byte(path)
