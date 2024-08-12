@@ -522,7 +522,6 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 			if strings.HasPrefix(of_name, baseName) {
 				// obtain the extension of the object file
 				of_ext = of_name[len(baseName):]
-				LogWarning("ext: %s", of_ext)
 			} else {
 				LogWarning(" getArtifcatNames: ap-gllvm: string does not begin with baseName %s %s", of_name, baseName)
 			}
