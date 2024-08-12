@@ -491,10 +491,14 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 			// otherwise just use the first object file
 			objFile = pr.ObjectFiles[0]
 		}
+
+		// issue #30:  main.cpp and main.c cause conflicts.
+		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
 		
-		// obtain the relative path
+		// obtain the relative path and correct output file extension
 		var rel_path string = ""
 		var of_name string = ""
+		var of_ext string = ".o"
 
 		// if we found an object file to refer to
 		if objFile != "" {
@@ -513,22 +517,17 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 					rel_path = rel_path[2:]
 				}
 			}
+			
+			// check that baseName and of_name share the same base name
+			if strings.HasPrefix(of_name, baseName) {
+				// obtain the extension of the object file
+				of_ext = of_name[len(baseName):]
+				LogWarning("ext: %s", of_ext)
+			} else {
+				LogWarning(" getArtifcatNames: ap-gllvm: string does not begin with baseName %s %s", of_name, baseName)
+			}
 		}
 
-		// now get the extension of the object file
-		dot_index := strings.Index(of_name, ".")
-		of_ext := of_name[dot_index:]
-		of_base := of_name[:dot_index]
-
-		// issue #30:  main.cpp and main.c cause conflicts.
-		// AP-GLLVM NOTE: because AP tracks file extension maybe we can keep track of extension
-		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
-
-
-		// LogWarning("BWE: %s, BN: %s, OFE: %s, OFB: %s", baseNameWithExt, baseName, of_ext, of_base)
-		if baseName != of_base {
-			LogWarning(" getArtifactNames: ap-gllvm: input and output filenames don't match [%s] [%s]\n", baseName, of_base)
-		}
 		// append relative directory to the path of the object and bitcode files
 		bcBase = fmt.Sprintf("%s.%s.o.bc", rel_path, baseNameWithExt)
 		if hidden {
