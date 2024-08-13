@@ -295,8 +295,7 @@ func buildBitcodeFile(compilerExecName string, pr ParserResult, srcFile string, 
 	//iam: 03/24/2020 extend with the LLVM_BITCODE_GENERATION_FLAGS if any.
 	args = append(args, LLVMbcGen...)
 
-	// AP-GLLVM: added "-fPIE" flag below
-	args = append(args, "-emit-llvm", "-fPIE", "-c", srcFile, "-o", bcFile)
+	args = append(args, "-emit-llvm", "-c", srcFile, "-o", bcFile)
 	
 	success, err := execCmd(compilerExecName, args, "")
 	if !success {
