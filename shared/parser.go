@@ -466,7 +466,6 @@ func indexOf(value string, slice []string) int {
 }
 
 /*
-
 AP-GLLVM NOTE: made the following edits to the function getArtifactNames
 */
 
@@ -481,7 +480,13 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 		srcFile := pr.InputFiles[srcFileIndex]
 		var _, baseNameWithExt = path.Split(srcFile)
 
-		
+		// issue #30:  main.cpp and main.c cause conflicts.
+		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
+
+		/*
+		 * AP-GLLVM ADDED CODE BEGINS HERE
+		 */
+
 		// check if we have an object file we can refer to relative path of
 		var objFile string
 		if (len(pr.ObjectFiles) == len(pr.InputFiles)) {
@@ -492,9 +497,6 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 			objFile = pr.ObjectFiles[0]
 		}
 
-		// issue #30:  main.cpp and main.c cause conflicts.
-		var baseName = strings.TrimSuffix(baseNameWithExt, filepath.Ext(baseNameWithExt))
-		
 		// obtain the relative path and correct output file extension
 		var rel_path string = ""
 		var of_name string = ""
@@ -526,6 +528,10 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 				LogWarning(" getArtifcatNames: ap-gllvm: string does not begin with baseName %s %s", of_name, baseName)
 			}
 		}
+
+		/*
+		 * AP-GLLVM ADDED CODE ENDS HERE
+		 */
 
 		// append relative directory to the path of the object and bitcode files
 		bcBase = fmt.Sprintf("%s.%s.o.bc", rel_path, baseNameWithExt)
