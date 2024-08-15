@@ -466,8 +466,12 @@ func indexOf(value string, slice []string) int {
 }
 
 /*
-AP-GLLVM NOTE: made the following edits to the function getArtifactNames
-*/
+ * AP-GLLVM NOTE: made the following edits to the function getArtifactNames
+ *
+ * Added code between lines ### and ###
+ * 
+ * Modified code between lines ### and ###
+ */
 
 // Return the object and bc filenames that correspond to the i-th source file
 func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase string, bcBase string) {
@@ -485,6 +489,11 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 
 		/*
 		 * AP-GLLVM ADDED CODE BEGINS HERE
+		 * 
+		 * Additions involve looking through the ParserResult (pr) object
+		 * to obtain the relative path (rel_path) and exact extension (of_ext) of the
+		 * object file name to use in generating bitcode and attaching its path to the
+		 * object file
 		 */
 
 		// check if we have an object file we can refer to relative path of
@@ -533,6 +542,28 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 		 * AP-GLLVM ADDED CODE ENDS HERE
 		 */
 
+		/*
+		 * AP-GLLVM CODE MODIFCATION BEGINS HERE
+		 *
+		 * On line ### changed:
+		 * 	bcBase = fmt.Sprintf(".%s.o.bc", baseNameWithExt)
+		 * 	to
+		 * 	bcBase = fmt.Sprintf("%s.%s.o.bc", rel_path, baseNameWithExt)
+		 * To ensure that bitcode file name included relative path 
+		 * (see Modifications in README.md)
+		 *
+		 * On line ### changed:
+		 * 	objBase = fmt.Sprintf(".%s.o", baseNameWithExt)
+		 * 	to
+		 * 	objBase = fmt.Sprintf("%s.%s%s", rel_path, baseName, of_ext)
+		 * And on line ### changed:
+		 * 	objBase = fmt.Sprintf("%s.o", baseName)
+		 * 	to
+		 * 	objBase = fmt.Sprintf("%s%s%s", rel_path, baseName, of_ext)
+		 * To ensure that object file name included relative path and exact extensions 
+		 * (see Modifications in README.md)
+		 */
+
 		// append relative directory to the path of the object and bitcode files
 		bcBase = fmt.Sprintf("%s.%s.o.bc", rel_path, baseNameWithExt)
 		if hidden {
@@ -540,6 +571,10 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 		} else {
 			objBase = fmt.Sprintf("%s%s%s", rel_path, baseName, of_ext)
 		}
+
+		/*
+		 * AP-GLLVM MODIFCATION ENDS HERE
+		 */
 	}
 	return
 }
