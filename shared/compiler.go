@@ -294,9 +294,7 @@ func buildBitcodeFile(compilerExecName string, pr ParserResult, srcFile string, 
 	args := pr.CompileArgs[:]
 	//iam: 03/24/2020 extend with the LLVM_BITCODE_GENERATION_FLAGS if any.
 	args = append(args, LLVMbcGen...)
-
 	args = append(args, "-emit-llvm", "-c", srcFile, "-o", bcFile)
-	
 	success, err := execCmd(compilerExecName, args, "")
 	if !success {
 		LogError("Failed to build bitcode file for %s because: %v\n", srcFile, err)
