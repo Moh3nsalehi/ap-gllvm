@@ -21,7 +21,7 @@ See ```gllvm.md``` for the original gllvm README
 **Modification**
 - The only executables that are affected by these modifications are gclang and gclang++
 
-- All modifications are in the file ```shared/parser.go```in the function getArtifactNames
+- All modifications to the source are in the file ```shared/parser.go```in the function getArtifactNames *(aside from updating github urls throughout the repository for consistency)*
     - The key issue is that gllvm aims to compiler object files and bitcode files separately, before adding the path of the bitcode file to the object file which will be linked in the final executable. However, the gllvm system assumes 2 invariants to hold during the bitcode path addition step, which do not hold for the ArduPilot build system. For more on the ArduPilot build system, see documentation for waf. <!-- add a hyperlink here for waf --> 
         1. All object files must placed in the same directory that they are compiled in
         2. For every ```.c``` or ```.cpp```, in the format ```filename.cpp```, its corresponding object file should be called ```filename.o```
