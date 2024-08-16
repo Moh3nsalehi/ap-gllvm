@@ -492,8 +492,7 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 		 * 
 		 * Additions involve looking through the ParserResult (pr) object
 		 * to obtain the relative path (rel_path) and exact extension (of_ext) of the
-		 * object file name to use in generating bitcode and attaching its path to the
-		 * object file
+		 * object file name to use in generating bitcode and attaching its path
 		 */
 
 		// check if we have an object file we can refer to relative path of
