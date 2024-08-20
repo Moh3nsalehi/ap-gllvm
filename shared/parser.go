@@ -506,14 +506,14 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 		}
 
 		// obtain the relative path and correct output file extension
-		var rel_path string = ""
-		var of_name string = ""
-		var of_ext string = ".o"
+		var rel_path string = "" // It will be difference between "ardupilot/build/sitl/.Storage.cpp.o.bc" and "ardupilot/build/sitl/libraries/AP_HAL/.Storage.cpp.o.bc"
+		var of_name string = "" // Storage.cpp.0.o
+		var of_ext string = ".o" // .cpp.0.o
 
 		// if we found an object file to refer to
 		if objFile != "" {
 			// obtain the directory relative directory for the output file
-			rel_path, of_name = path.Split(pr.ObjectFiles[srcFileIndex])
+			rel_path, of_name = path.Split(pr.ObjectFiles[srcFileIndex]) 
 
 			// check if we obtained anything
 			if len(rel_path) > 0 {
