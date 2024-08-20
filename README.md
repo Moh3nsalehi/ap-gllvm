@@ -33,12 +33,12 @@ See ```gllvm.md``` for the original gllvm README
     - Our solution involves modifying the getArtifactNames which returns the name of the object file that has just been generated and the corresponding bitcode file that gllvm will generate in the next step in order to attach it to the object file. We modify the function to keep track of the exact file name of the object file by referring the the output argument of the compile command, rather than the input argument as was the original functionality. Further, we obtain the relative path of the compile command argument and add this to both of our return variables (object file name and bitcode file name). We add to the object file to ensure that gllvm can find the object file to link the corresponding bitcode file. We add it to the bitcode file name to ensure that it is placed in the same directory as the object file, thus negating the problem of same name bitcode files overwritting one another.
  
     - For example:
-        - If we are compiling the file ardupilot/libraries/AP_HAL/Storage.cpp, it will be compiled to the object file: ardupilot/build/sitl/libraries/AP_HAL/Storage.cpp.0.o
-        - However, the original implementation of GLLVM would compile the corresponding bitcode file as ardupilot/build/sitl/.Storage.cpp.o.bc rather than ardupilot/build/sitl/libraries/AP_HAL/.Storage.cpp.o.bc
-        - It would proceed to search for the object file ardupilot/build/sitl/Storage.o to attach the bitcode file to
-            - Unfortunately the file ardupilot/build/sitl/Storage.o does not exist
-            - Additionally, there exists a file ardupilot/libraries/AP_HAL_EMPTY/Storage.cpp which has the same name but exists in a different directory
-            - so when we compile it to its corresponding bitcode file, the version of ardupilot/build/sitl/.Storage.cpp.o.bc corresponding to the AP_HAL directory is overwritten, in favor of the same file name as corresponding to the AP_HAL_EMPTY directory
-        - In our solution, we compile the bitcode file in ardupilot/build/sitl/libraries/AP_HAL/.Storage.cpp.o.bc rather than ardupilot/build/sitl/.Storage.cpp.o.bc
-        - And we attach the bitcode file to the object file ardupilot/build/sitl/libraries/AP_HAL/Storage.cpp.0.o rather than ardupilot/build/sitl/Storage.o
+        - If we are compiling the file `ardupilot/libraries/AP_HAL/Storage.cpp`, it will be compiled to the object file: `ardupilot/build/sitl/libraries/AP_HAL/Storage.cpp.0.o`
+        - However, the original implementation of GLLVM would compile the corresponding bitcode file as `ardupilot/build/sitl/.Storage.cpp.o.bc` rather than `ardupilot/build/sitl/libraries/AP_HAL/.Storage.cpp.o.bc`
+        - It would proceed to search for the object file `ardupilot/build/sitl/Storage.o` to attach the bitcode file to
+            - Unfortunately the file `ardupilot/build/sitl/Storage.o` does not exist
+            - Additionally, there exists a file `ardupilot/libraries/AP_HAL_EMPTY/Storage.cpp` which has the same name but exists in a different directory
+            - so when we compile it to its corresponding bitcode file, the version of `ardupilot/build/sitl/.Storage.cpp.o.bc` corresponding to the `AP_HAL` directory is overwritten, in favor of the same file name as corresponding to the `AP_HAL_EMPTY` directory
+        - In our solution, we compile the bitcode file in `ardupilot/build/sitl/libraries/AP_HAL/.Storage.cpp.o.bc` rather than `ardupilot/build/sitl/.Storage.cpp.o.bc`
+        - And we attach the bitcode file to the object file `ardupilot/build/sitl/libraries/AP_HAL/Storage.cpp.0.o` rather than `ardupilot/build/sitl/Storage.o`
 
