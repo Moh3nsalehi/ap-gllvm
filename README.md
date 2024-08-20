@@ -39,6 +39,6 @@ See ```gllvm.md``` for the original gllvm README
             - Unfortunately the file `ardupilot/build/sitl/Storage.o` does not exist
             - Additionally, there exists a file `ardupilot/libraries/AP_HAL_EMPTY/Storage.cpp` which has the same name but exists in a different directory
             - so when we compile it to its corresponding bitcode file, the version of `ardupilot/build/sitl/.Storage.cpp.o.bc` corresponding to the `AP_HAL` directory is overwritten, in favor of the same file name as corresponding to the `AP_HAL_EMPTY` directory
-        - In our solution, we compile the bitcode file in `ardupilot/build/sitl/libraries/AP_HAL/.Storage.cpp.o.bc` rather than `ardupilot/build/sitl/.Storage.cpp.o.bc`
-        - And we attach the bitcode file to the object file `ardupilot/build/sitl/libraries/AP_HAL/Storage.cpp.0.o` rather than `ardupilot/build/sitl/Storage.o`
+        - In our solution, we compile the bitcode file in `ardupilot/build/sitl/libraries/AP_HAL/.Storage.cpp.o.bc` rather than `ardupilot/build/sitl/.Storage.cpp.o.bc` (implemented in `ap-gllvm/shared/parser.go:516-529` using variable `rel_path`)
+        - And we attach the bitcode file to the object file `ardupilot/build/sitl/libraries/AP_HAL/Storage.cpp.0.o` rather than `ardupilot/build/sitl/Storage.o` (implemented in `ap-gllvm/shared/parser.go:516-537` using variables `rel_path` and `of_ext`)
 
