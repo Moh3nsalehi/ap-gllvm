@@ -42,7 +42,7 @@ See ```gllvm.md``` for the original gllvm README
 **Logistical Differences**
 - Note that this version of gllvm must be installed with 
     ```bash
-    go install github.com/thirdxmatson/ap-gllvm/cmd/...@latest
+    go install github.com/Moh3nsalehi/ap-gllvm/cmd/...@latest
     ```
     not
     ```bash
@@ -54,7 +54,7 @@ See ```gllvm.md``` for the original gllvm README
 **Modification**
 - The only executables that are affected by these modifications are ```gclang``` and ```gclang++```
 
-- All modifications to the source are in the file ```shared/parser.go``` in the function getArtifactNames *(aside from updating github urls throughout the repository for consistency from ```github.com/SRI-CSL/gllvm/``` to ```github.com/thirdxmatson/ap-gllvm/```)*
+- All modifications to the source are in the file ```shared/parser.go``` in the function getArtifactNames *(aside from updating github urls throughout the repository for consistency from ```github.com/SRI-CSL/gllvm/``` to ```github.com/Moh3nsalehi/ap-gllvm/```)*
     - The key issue is that gllvm aims to compile object files and bitcode files separately, before adding the path of the bitcode file to the object file which will be linked in the final executable. However, the gllvm system assumes 2 invariants to hold during the bitcode path addition step, which do not hold for the ArduPilot build system (*for more on the ArduPilot build system, see documentation for [waf](https://waf.io/book/)*): <!-- add a hyperlink here for waf --> 
         1. All object files must placed in the same directory that they are compiled in
         2. For every ```.c``` or ```.cpp``` to be compiled, in the format ```filename.cpp```, its corresponding object file should be called ```filename.o``` (these files exist mostly in the subdirectories of `ardupilot/libraries` or `ardupilot/[vehicle]`)
