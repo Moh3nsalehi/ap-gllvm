@@ -18,7 +18,7 @@ help:
 install: develop
 
 develop:
-	go install github.com/thirdxmatson/ap-gllvm/cmd/...
+	go install github.com/Moh3nsalehi/ap-gllvm/cmd/...
 
 
 test: develop
