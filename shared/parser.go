@@ -531,6 +531,7 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 			}
 			
 			// check that baseName and of_name share the same base name
+			// baseName = "Storage" from "ardupilot/libraries/AP_HAL/Storage.cpp" 
 			if strings.HasPrefix(of_name, baseName) {
 				// obtain the extension of the object file
 				of_ext = of_name[len(baseName):]
