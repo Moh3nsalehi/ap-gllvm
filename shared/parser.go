@@ -534,7 +534,7 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 			// baseName = "Storage" from "ardupilot/libraries/AP_HAL/Storage.cpp" 
 			if strings.HasPrefix(of_name, baseName) {
 				// obtain the extension of the object file
-				of_ext = of_name[len(baseName):]
+				of_ext = of_name[len(baseName):] // assign this ".cpp.0.o"
 			} else {
 				LogWarning(" getArtifcatNames: ap-gllvm: string does not begin with baseName %s %s", of_name, baseName)
 			}
@@ -567,9 +567,11 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 		 */
 
 		// append relative directory to the path of the object and bitcode files
-		bcBase = fmt.Sprintf("%s.%s.o.bc", rel_path, baseNameWithExt)
+		// rel_path= "libraries/AP_HAL/"
+		// baseNameWithExt = "Storage.cpp"
+		bcBase = fmt.Sprintf("%s.%s.o.bc", rel_path, baseNameWithExt) // generate bc file name : "libraries/AP_HAL/.Storage.cpp.o.bc"
 		if hidden {
-			objBase = fmt.Sprintf("%s.%s%s", rel_path, baseName, of_ext)
+			objBase = fmt.Sprintf("%s.%s%s", rel_path, baseName, of_ext) // find object file : "libraries/AP_HAL/Storage.cpp.0.o"
 		} else {
 			objBase = fmt.Sprintf("%s%s%s", rel_path, baseName, of_ext)
 		}
