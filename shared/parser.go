@@ -523,6 +523,8 @@ func getArtifactNames(pr ParserResult, srcFileIndex int, hidden bool) (objBase s
 				}
 
 				// remove a '-o' if it is attached to the beginning
+				// because waf forgets to add a space between -o and object file name
+				// e.g. gives us "clang++ ... -olibaries/AP_HAL/Storage.cpp.0.o" instead of "clang++ ... -o libaries/AP_HAL/Storage.cpp.0.o"
 				if strings.HasPrefix(rel_path, "-o") {
 					rel_path = rel_path[2:]
 				}
