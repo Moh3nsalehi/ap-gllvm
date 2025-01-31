@@ -9,7 +9,7 @@ See ```gllvm.md``` for the original gllvm README
 **Logistical Differences**
 - Note that this version of gllvm must be installed with 
     ```bash
-    go install github.com/Moh3nsalehi/ap-gllvm/cmd/...@v1.0.3
+    go install github.com/Moh3nsalehi/ap-gllvm/cmd/...@v1.0.4
     ```
     not
     ```bash
